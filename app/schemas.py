@@ -1,18 +1,17 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from pydantic import BaseModel, EmailStr, Field, StringConstraints, ConfigDict
 from datetime import datetime
 
-SubjectStr = Annotated[str, StringConstraints(min_length=2, max_length=10)]
+SubjectStr = Annotated[str, StringConstraints(min_length=2, max_length=20)]
 MsgStr = Annotated[str, StringConstraints(min_length=2, max_length=50)]
-StatusStr = "Sent"
 
 class NotificationCreate(BaseModel):
     transaction_id: int
     recipient: EmailStr
     subject: SubjectStr
     message: MsgStr
-    status: str = StatusStr
-    timestamp: datetime
+    status: str = "sent"
+    timestamp: Optional[datetime] = None
 
 class NotificationRead(BaseModel):
     id: int
