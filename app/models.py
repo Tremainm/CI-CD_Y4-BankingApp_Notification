@@ -1,14 +1,18 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer
+from sqlalchemy import String, Integer, DateTime
+from sqlalchemy.sql import func
 
 class Base(DeclarativeBase):
     pass
 
-class UserDB(Base):
-    __tablename__ = "users"
+class NotificationDB(Base):
+    __tablename__ = "notifications"
     
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
-    age: Mapped[int] = mapped_column(Integer, nullable=False)
-    student_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    transaction_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    recipient: Mapped[str] = mapped_column(String, nullable=False)
+    subject: Mapped[str] = mapped_column(String, nullable=False)
+    message: Mapped[str] = mapped_column(String, nullable=False)
+    status: Mapped[str] = mapped_column(String, nullable=False, default="sent")
+    timestamp: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # ^ Map timestamps of transaction notifications

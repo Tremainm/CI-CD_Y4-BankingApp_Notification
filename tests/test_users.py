@@ -26,6 +26,12 @@ def client():
         yield c
         # --- teardown happens when the 'with' block exits ---
 
-def test_create_user(client):
-    r = client.post("/api/users", json={"name":"Paul","email":"pl@atu.ie","age":25,"student_id":"S1234567"})
+def test_create_notification(client):
+    r = client.post("/api/notifications", json={
+                                            "transaction_id": 42,
+                                            "recipient": "jane@example.com",
+                                            "subject": "Payment received",
+                                            "message": "You received €100 from John",
+                                            "status": "sent",
+                                            "timestamp": "2025-10-29T11:10:18.088000"})
     assert r.status_code == 201

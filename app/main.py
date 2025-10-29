@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from .database import engine, SessionLocal
-from .models import Base, UserDB
-from .schemas import UserCreate, UserRead
+from .models import Base, NotificationDB
+from .schemas import NotificationCreate, NotificationRead
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
@@ -16,26 +16,26 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/api/users", response_model=list[UserRead])
-def list_users(db: Session = Depends(get_db)):
-    stmt = select(UserDB).order_by(UserDB.id)
+@app.get("/api/notifications", response_model=list[NotificationRead])
+def list_notifications(db: Session = Depends(get_db)):
+    stmt = select(NotificationDB).order_by(NotificationDB.id)
     return list(db.execute(stmt).scalars())
 
-@app.get("/api/users/{user_id}", response_model=UserRead)
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.get(UserDB, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+@app.get("/api/notifications/{notification_id}", response_model=NotificationRead)
+def get_notification(notification_id: int, db: Session = Depends(get_db)):
+    notification = db.get(NotificationDB, notification_id)
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return notification
 
-@app.post("/api/users", response_model=UserRead, status_code=status.HTTP_201_CREATED)
-def add_user(payload: UserCreate, db: Session = Depends(get_db)):
-    user = UserDB(**payload.model_dump())
-    db.add(user)
+@app.post("/api/notifications", response_model=NotificationRead, status_code=status.HTTP_201_CREATED)
+def add_notification(payload: NotificationCreate, db: Session = Depends(get_db)):
+    notification = NotificationDB(**payload.model_dump())
+    db.add(notification)
     try:
         db.commit()
-        db.refresh(user)
+        db.refresh(notification)
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=409, detail="User already exists")
-    return user
+        raise HTTPException(status_code=409, detail="Notification already exists")
+    return notification
