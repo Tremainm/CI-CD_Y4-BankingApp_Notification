@@ -10,9 +10,18 @@ channel = connection.channel()
 
 channel.queue_declare(queue='hello')
 
+# Message durability: ensure messages are not lost is rabbitMQ is terminated/restarted
+channel.queue_declare(queue='task_queue', durable=True)
+
 # Allows messages from command line
 message = ' '.join(sys.argv[1:]) or "Hello World!"
-channel.basic_publish(exchange='', routing_key='hello', body=message)
+channel.basic_publish(exchange='', 
+                      routing_key='task_queue', 
+                      body=message, 
+                      
+                      # Mark messages as persistent
+                      properties=pika.BasicProperties(
+                          delivery_mode = pika.DeliveryMode.Persistent))
 print(f" [x] Sent {message}")
 
 connection.close()
