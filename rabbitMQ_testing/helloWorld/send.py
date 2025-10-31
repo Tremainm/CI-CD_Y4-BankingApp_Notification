@@ -1,6 +1,7 @@
 # RabbitMQ tutorial from here:https://www.rabbitmq.com/tutorials/tutorial-one-python
 # Downloading rabbitMQ in codespace:
-# 1. docker run -d --hostname rabbit --name rabbitmq \ -p 5672:5672 -p 15672:15672 \ rabbitmq:3-management
+# 1. docker run -d --hostname rabbit --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+# 2. If restarting codespace, run 'docker start rabbitmq' to restart rabbitmq
 
 import pika
 
