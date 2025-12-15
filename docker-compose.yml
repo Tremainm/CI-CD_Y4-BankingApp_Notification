@@ -29,7 +29,7 @@ services:
     env_file: .env.docker
     environment:
       - APP_ENV=docker
-    command: ["python", "-m", "app.worker"]
+    command: ["python", "-u", "-m", "app.worker"]
     depends_on:
       db:
         condition: service_healthy
