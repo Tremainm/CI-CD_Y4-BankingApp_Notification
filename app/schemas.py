@@ -1,25 +1,34 @@
-from typing import Annotated, Optional
-from pydantic import BaseModel, EmailStr, Field, StringConstraints, ConfigDict
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+from typing import Optional
+from decimal import Decimal
 
-SubjectStr = Annotated[str, StringConstraints(min_length=2, max_length=20)]
-MsgStr = Annotated[str, StringConstraints(min_length=2, max_length=50)]
 
+# Incoming transaction event (from Account service)
+class TransactionEvent(BaseModel):
+    id: int
+    tx_type: str
+    amount: Decimal
+
+    sender_account_number: Optional[str] = None
+    sender_name: Optional[str] = None
+
+    receiver_account_number: Optional[str] = None
+    receiver_name: Optional[str] = None
+
+    created_at: datetime
+
+# Notification API schemas
 class NotificationCreate(BaseModel):
     transaction_id: int
-    recipient: EmailStr
-    subject: SubjectStr
-    message: MsgStr
-    status: str = "sent"
-    timestamp: Optional[datetime] = None
-
-class NotificationRead(BaseModel):
-    id: int
-    transaction_id: int
-    recipient: EmailStr
+    recipient: str
     subject: str
     message: str
-    status: str
-    timestamp: datetime
-    
+    status: str = "sent"
+
+
+class NotificationRead(NotificationCreate):
+    id: int
+    created_at: datetime
+
     model_config = ConfigDict(from_attributes=True)
