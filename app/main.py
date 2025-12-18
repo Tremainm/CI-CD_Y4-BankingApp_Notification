@@ -42,14 +42,14 @@ def get_notification(notification_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Notification not found")
     return notification
 
-@app.post("/api/notifications", response_model=NotificationRead, status_code=status.HTTP_201_CREATED)
-def add_notification(payload: NotificationCreate, db: Session = Depends(get_db)):
-    notification = NotificationDB(**payload.model_dump())
-    db.add(notification)
-    try:
-        db.commit()
-        db.refresh(notification)
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=409, detail="Notification already exists")
-    return notification
+# @app.post("/api/notifications", response_model=NotificationRead, status_code=status.HTTP_201_CREATED)
+# def add_notification(payload: NotificationCreate, db: Session = Depends(get_db)):
+#     notification = NotificationDB(**payload.model_dump())
+#     db.add(notification)
+#     try:
+#         db.commit()
+#         db.refresh(notification)
+#     except IntegrityError:
+#         db.rollback()
+#         raise HTTPException(status_code=409, detail="Notification already exists")
+#     return notification

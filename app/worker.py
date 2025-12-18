@@ -25,57 +25,55 @@ def create_notification(db, tx_id, recipient, subject, message):
 async def handle_transaction(event: dict):
     db = SessionLocal()
 
-    tx_type = event["tx_type"]
-    amount = Decimal(event["amount"])
+    try:
+        tx_type = event["event_type"]
+        tx_id = event["transaction_id"]
+        amount = Decimal(event["amount"])
 
-    sender_name = event.get("sender_name")
-    sender_acc = event.get("sender_account_number")
+        account_number = event["account_number"]
+        account_name = event["account_name"]
 
-    receiver_name = event.get("receiver_name")
-    receiver_acc = event.get("receiver_account_number")
+        counterparty_acc = event.get("counterparty_account_number")
+        counterparty_name = event.get("counterparty_name")
 
-    tx_id = event["id"]
+        if tx_type == "deposit":
+            create_notification(
+                db,
+                tx_id,
+                account_number,
+                "Deposit Successful",
+                f"You received €{amount}."
+            )
 
-    # ---------- Deposit ----------
-    if tx_type == "deposit":
-        create_notification(
-            db,
-            tx_id,
-            receiver_acc,
-            "Deposit Successful",
-            f"You received €{amount}."
-        )
+        elif tx_type == "withdrawal":
+            create_notification(
+                db,
+                tx_id,
+                account_number,
+                "Withdrawal Successful",
+                f"You withdrew €{amount}."
+            )
 
-    # ---------- Withdrawal ----------
-    elif tx_type == "withdrawal":
-        create_notification(
-            db,
-            tx_id,
-            sender_acc,
-            "Withdrawal Successful",
-            f"You withdrew €{amount}."
-        )
+        elif tx_type == "transfer_out":
+            create_notification(
+                db,
+                tx_id,
+                account_number,
+                "Transfer Sent",
+                f"You sent €{amount} to {counterparty_name} ({counterparty_acc})."
+            )
 
-    # ---------- Transfer ----------
-    elif tx_type == "transfer_out":
-        create_notification(
-            db,
-            tx_id,
-            sender_acc,
-            "Transfer Sent",
-            f"You sent €{amount} to {receiver_name} ({receiver_acc})."
-        )
+        elif tx_type == "transfer_in":
+            create_notification(
+                db,
+                tx_id,
+                account_number,
+                "Transfer Received",
+                f"You received €{amount} from {counterparty_name} ({counterparty_acc})."
+            )
 
-    elif tx_type == "transfer_in":
-        create_notification(
-            db,
-            tx_id,
-            receiver_acc,
-            "Transfer Received",
-            f"You received €{amount} from {sender_name} ({sender_acc})."
-        )
-
-    db.close()
+    finally:
+        db.close()
 
 
 async def main():
