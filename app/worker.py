@@ -42,7 +42,7 @@ async def handle_transaction(event: dict):
                 tx_id,
                 account_number,
                 "Deposit Successful",
-                f"You received €{amount}."
+                f"{account_name} received €{amount}."
             )
 
         elif tx_type == "withdrawal":
@@ -51,7 +51,7 @@ async def handle_transaction(event: dict):
                 tx_id,
                 account_number,
                 "Withdrawal Successful",
-                f"You withdrew €{amount}."
+                f"{account_name} withdrew €{amount}."
             )
 
         elif tx_type == "transfer_out":
@@ -60,7 +60,7 @@ async def handle_transaction(event: dict):
                 tx_id,
                 account_number,
                 "Transfer Sent",
-                f"You sent €{amount} to {counterparty_name} ({counterparty_acc})."
+                f"{account_name} sent €{amount} to {counterparty_name} ({counterparty_acc})."
             )
 
         elif tx_type == "transfer_in":
@@ -69,7 +69,7 @@ async def handle_transaction(event: dict):
                 tx_id,
                 account_number,
                 "Transfer Received",
-                f"You received €{amount} from {counterparty_name} ({counterparty_acc})."
+                f"{account_name} received €{amount} from {counterparty_name} ({counterparty_acc})."
             )
 
     finally:
