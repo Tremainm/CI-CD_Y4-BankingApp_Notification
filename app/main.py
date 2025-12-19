@@ -35,21 +35,12 @@ def list_notifications(db: Session = Depends(get_db)):
     stmt = select(NotificationDB).order_by(NotificationDB.id)
     return list(db.execute(stmt).scalars())
 
-@app.get("/api/notifications/{notification_id}", response_model=NotificationRead)
-def get_notification(notification_id: int, db: Session = Depends(get_db)):
-    notification = db.get(NotificationDB, notification_id)
-    if not notification:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    return notification
+@app.get("/api/notifications/by-account/{account_number}", response_model=list[NotificationRead])
+def get_notifications_by_account(account_number: str, db: Session = Depends(get_db),):
+    notifications = (db.query(NotificationDB).filter(NotificationDB.recipient == account_number)
+    .order_by(NotificationDB.created_at.desc(), NotificationDB.id.desc()).all())
 
-# @app.post("/api/notifications", response_model=NotificationRead, status_code=status.HTTP_201_CREATED)
-# def add_notification(payload: NotificationCreate, db: Session = Depends(get_db)):
-#     notification = NotificationDB(**payload.model_dump())
-#     db.add(notification)
-#     try:
-#         db.commit()
-#         db.refresh(notification)
-#     except IntegrityError:
-#         db.rollback()
-#         raise HTTPException(status_code=409, detail="Notification already exists")
-#     return notification
+    if not notifications:
+        raise HTTPException(status_code=404, detail="No notifications found for this account number")
+
+    return notifications
